@@ -12,7 +12,7 @@ class M3U8VideoCache {
     
     /// 开启代理服务器
     /// - Parameter port: 代理服务器的端口号
-    static func proxyStart(_ port: Int = 8099) {
+    static func proxyStart(_ port: UInt = 8099) {
         VideoCacheServer.shared.start(port)
     }
     

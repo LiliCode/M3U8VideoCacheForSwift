@@ -27,6 +27,15 @@ class ViewController: UIViewController {
         
         // register cell
         tableView!.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
+        
+        
+        DispatchQueue.global().async {
+            let task = URLSession.shared.dataTask(with: URLRequest(url: URL(string: "http://MacBook-Pro.local:8099/")!)) { data, res, error in
+                print("data = \(String(describing: String(data: data!, encoding: .utf8)))")
+            }
+            
+            task.resume()
+        }
     }
     
     override func viewDidLayoutSubviews() {
