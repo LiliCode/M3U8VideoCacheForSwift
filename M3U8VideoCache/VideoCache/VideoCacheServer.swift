@@ -43,6 +43,10 @@ class VideoCacheServer {
             return nil
         }
         
+        guard webServer?.isRunning ?? false else {
+            return orignalUrl
+        }
+        
         guard let serverURLString = serverUrl else {
             return orignalUrl
         }
