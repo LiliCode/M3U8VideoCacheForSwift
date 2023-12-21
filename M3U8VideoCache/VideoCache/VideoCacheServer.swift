@@ -53,24 +53,26 @@ class VideoCacheServer {
     func initWebServer() {
         if (webServer == nil) {
             webServer = GCDWebServer()
-            webServer!.addHandler(forMethod: "GET", path: "/\(path)", request: GCDWebServerRequest.self) { [weak self] (request, completionBlock) in
-                guard let originalUrl = request.url.absoluteString.components(separatedBy: "\(self?.path ?? "request")?url=").last else {
+            webServer!.addDefaultHandler(forMethod: "GET", request: GCDWebServerRequest.self) { [weak self] (request, completionBlock) in
+                guard let originalUrl = request.url.absoluteString.components(separatedBy: "?url=").last else {
                     completionBlock(GCDWebServerResponse())
                     return
                 }
                 
-                print("请求的链接: \(originalUrl)")
-                
                 let url = URL(string: originalUrl)!
                 var req = URLRequest(url: url, timeoutInterval: 30)
-                req.allHTTPHeaderFields = request.headers
-                req.allHTTPHeaderFields?["Host"] = url.host
+                var headers = request.headers
+                headers["Host"] = url.host
+                req.allHTTPHeaderFields = headers
                 req.httpMethod = "GET"
                 
+                print("请求的链接: \(originalUrl)")
                 print("请求的 headers: \(req.allHTTPHeaderFields ?? [:])")
                 
                 self?.requestData(req) { response in
-                    completionBlock(response)
+                    DispatchQueue.main.async {
+                        completionBlock(response)
+                    }
                 }
             }
             
@@ -82,22 +84,35 @@ class VideoCacheServer {
     
     /// 请求数据
     func requestData(_ request: URLRequest, completionBlock: ((GCDWebServerResponse) -> Void)?) {
-        VideoDownloader.shared.download(request) { data, response, error in
-            var res = GCDWebServerDataResponse()
-            if error != nil, let r = response as? HTTPURLResponse {
-                res.contentType = r.mimeType ?? ""
-                res.statusCode = r.statusCode
+        VideoDownloader.shared.download(request) { [weak self] (data, response, error) in
+            var serverResponse = GCDWebServerDataResponse()
+            guard let res = response as? HTTPURLResponse else {
+                serverResponse.statusCode = 404
+                completionBlock?(serverResponse)
+                return;
+            }
+            
+            // 存在响应
+            if error != nil {
+                serverResponse.contentType = res.mimeType ?? ""
+                serverResponse.statusCode = res.statusCode
             } else {
-                if let d = data, let r = response as? HTTPURLResponse {
-                    res = GCDWebServerDataResponse(data: d, contentType: r.mimeType ?? "")
-                    res.statusCode = r.statusCode
-                    for keyValue in r.allHeaderFields {
-                        res.setValue(keyValue.value as? String, forAdditionalHeader: keyValue.key as! String)
+                if let d = data {
+                    if res.url!.absoluteString.isM3u8Url() {
+                        // 如果是 m3u8 的索引文件，就需要加工一下
+                        if let proxyUrl = self?.createProxyUrl(res.url!.absoluteString), let newData = IndexModify.modify(d, url: URL(string: proxyUrl)!) {
+                            serverResponse = GCDWebServerDataResponse(data: newData, contentType: res.mimeType ?? "")
+                            serverResponse.statusCode = res.statusCode
+                        }
+                    } else {
+                        // ts、key 文件直接返回
+                        serverResponse = GCDWebServerDataResponse(data: d, contentType: res.mimeType ?? "")
+                        serverResponse.statusCode = res.statusCode
                     }
                 }
             }
             
-            completionBlock?(res)
+            completionBlock?(serverResponse)
         }
     }
 }

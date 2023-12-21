@@ -16,6 +16,8 @@
 		A1A132EA2B31E4D400C71C5A /* M3U8VideoCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A132E92B31E4D400C71C5A /* M3U8VideoCache.swift */; };
 		A1A132EC2B31E5B900C71C5A /* VideoCacheServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A132EB2B31E5B900C71C5A /* VideoCacheServer.swift */; };
 		A1A132EE2B332B4500C71C5A /* VideoDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A132ED2B332B4500C71C5A /* VideoDownloader.swift */; };
+		A1A132F02B34784F00C71C5A /* Modify.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A132EF2B34784F00C71C5A /* Modify.swift */; };
+		A1A133052B3493FB00C71C5A /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A133042B3493FB00C71C5A /* Utils.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +32,8 @@
 		A1A132E92B31E4D400C71C5A /* M3U8VideoCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = M3U8VideoCache.swift; sourceTree = "<group>"; };
 		A1A132EB2B31E5B900C71C5A /* VideoCacheServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCacheServer.swift; sourceTree = "<group>"; };
 		A1A132ED2B332B4500C71C5A /* VideoDownloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoDownloader.swift; sourceTree = "<group>"; };
+		A1A132EF2B34784F00C71C5A /* Modify.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Modify.swift; sourceTree = "<group>"; };
+		A1A133042B3493FB00C71C5A /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		A5349C728CDCF3314185E420 /* Pods_M3U8VideoCache.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_M3U8VideoCache.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BD949E4319D646C7DAEE02D3 /* Pods-M3U8VideoCache.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-M3U8VideoCache.debug.xcconfig"; path = "Target Support Files/Pods-M3U8VideoCache/Pods-M3U8VideoCache.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -92,6 +96,8 @@
 				A1A132E92B31E4D400C71C5A /* M3U8VideoCache.swift */,
 				A1A132EB2B31E5B900C71C5A /* VideoCacheServer.swift */,
 				A1A132ED2B332B4500C71C5A /* VideoDownloader.swift */,
+				A1A132EF2B34784F00C71C5A /* Modify.swift */,
+				A1A133042B3493FB00C71C5A /* Utils.swift */,
 			);
 			path = VideoCache;
 			sourceTree = "<group>";
@@ -221,7 +227,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1A132D72B31D93D00C71C5A /* ViewController.swift in Sources */,
+				A1A132F02B34784F00C71C5A /* Modify.swift in Sources */,
 				A1A132EE2B332B4500C71C5A /* VideoDownloader.swift in Sources */,
+				A1A133052B3493FB00C71C5A /* Utils.swift in Sources */,
 				A1A132D32B31D93D00C71C5A /* AppDelegate.swift in Sources */,
 				A1A132EA2B31E4D400C71C5A /* M3U8VideoCache.swift in Sources */,
 				A1A132EC2B31E5B900C71C5A /* VideoCacheServer.swift in Sources */,
