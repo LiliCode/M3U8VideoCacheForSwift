@@ -13,7 +13,8 @@ class ViewController: UIViewController {
     let dataSource: [String] = [
         "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
         "http://playertest.longtailvideo.com/adaptive/bipbop/gear4/prog_index.m3u8",
-        "https://test-streams.mux.dev/x36xhzz/url_8/193039199_mp4_h264_aac_fhd_7.m3u8"
+        "https://test-streams.mux.dev/x36xhzz/url_8/193039199_mp4_h264_aac_fhd_7.m3u8",
+        "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8"
     ]
 
     override func viewDidLoad() {
