@@ -19,6 +19,7 @@
 		A1A132F02B34784F00C71C5A /* Modify.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A132EF2B34784F00C71C5A /* Modify.swift */; };
 		A1A133052B3493FB00C71C5A /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A133042B3493FB00C71C5A /* Utils.swift */; };
 		A1A133072B35D4A700C71C5A /* VideoCacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A133062B35D4A700C71C5A /* VideoCacheManager.swift */; };
+		A1A133092B36057D00C71C5A /* SizeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A133082B36057D00C71C5A /* SizeViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +37,7 @@
 		A1A132EF2B34784F00C71C5A /* Modify.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Modify.swift; sourceTree = "<group>"; };
 		A1A133042B3493FB00C71C5A /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		A1A133062B35D4A700C71C5A /* VideoCacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCacheManager.swift; sourceTree = "<group>"; };
+		A1A133082B36057D00C71C5A /* SizeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SizeViewController.swift; sourceTree = "<group>"; };
 		A5349C728CDCF3314185E420 /* Pods_M3U8VideoCache.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_M3U8VideoCache.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BD949E4319D646C7DAEE02D3 /* Pods-M3U8VideoCache.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-M3U8VideoCache.debug.xcconfig"; path = "Target Support Files/Pods-M3U8VideoCache/Pods-M3U8VideoCache.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -84,6 +86,7 @@
 				A1A132E82B31E4BF00C71C5A /* VideoCache */,
 				A1A132D22B31D93D00C71C5A /* AppDelegate.swift */,
 				A1A132D62B31D93D00C71C5A /* ViewController.swift */,
+				A1A133082B36057D00C71C5A /* SizeViewController.swift */,
 				A1A132D82B31D93D00C71C5A /* Main.storyboard */,
 				A1A132DB2B31D93E00C71C5A /* Assets.xcassets */,
 				A1A132DD2B31D93E00C71C5A /* LaunchScreen.storyboard */,
@@ -230,6 +233,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1A133072B35D4A700C71C5A /* VideoCacheManager.swift in Sources */,
+				A1A133092B36057D00C71C5A /* SizeViewController.swift in Sources */,
 				A1A132D72B31D93D00C71C5A /* ViewController.swift in Sources */,
 				A1A132F02B34784F00C71C5A /* Modify.swift in Sources */,
 				A1A132EE2B332B4500C71C5A /* VideoDownloader.swift in Sources */,

@@ -123,4 +123,18 @@ class VideoCacheManager {
         return FileManager.default.fileExists(atPath: filePath)
     }
     
+    /// 获取缓存大小
+    func getCacheSize(_ callback: ((UInt64) -> Void)?) {
+        guard let root = videoCacheRoot else {
+            callback?(0)
+            return
+        }
+        
+        DispatchQueue.global().async {
+            let size = URL(fileURLWithPath: root).cacheSize()
+            DispatchQueue.main.async {
+                callback?(size)
+            }
+        }
+    }
 }

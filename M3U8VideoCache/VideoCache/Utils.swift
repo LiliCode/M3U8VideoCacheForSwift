@@ -26,7 +26,7 @@ extension String {
 
         #if swift(>=5.0)
         
-        let d = data.withUnsafeBytes { (bytes:  UnsafeRawBufferPointer) in
+        _ = data.withUnsafeBytes { (bytes:  UnsafeRawBufferPointer) in
             return CC_MD5(bytes.baseAddress, CC_LONG(data.count), &digest)
         }
         
@@ -39,4 +39,38 @@ extension String {
 
         return digest.map { String(format: "%02x", $0) }.joined()
     }
+}
+
+extension URL {
+    
+    /// 获取缓存占用的大小（单位：字节）
+    /// - Returns: 返回缓存占用的大小
+    func cacheSize() -> UInt64 {
+        guard isFileURL else { return 0 }
+        
+        let path = absoluteString.replacingOccurrences(of: "file://", with: "")
+        var size: UInt64 = 0
+        var isDirectory = ObjCBool(false)
+        let exists = FileManager.default.fileExists(atPath: path, isDirectory: &isDirectory)
+        
+        if exists && isDirectory.boolValue {
+            guard let enumerator = FileManager.default.enumerator(atPath: path) else {
+                return 0
+            }
+            
+            for e in enumerator.allObjects {
+                let fullPath = appendingPathComponent(e as! String)
+                size += fullPath.cacheSize()
+            }
+        } else if exists {
+            // 文件
+            let attributes = try? FileManager.default.attributesOfItem(atPath: path)
+            if let s = attributes?[FileAttributeKey.size] as? UInt64 {
+                size += s
+            }
+        }
+        
+        return size
+    }
+    
 }

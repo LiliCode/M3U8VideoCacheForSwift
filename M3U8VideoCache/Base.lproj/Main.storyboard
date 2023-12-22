@@ -19,11 +19,48 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
-                    <navigationItem key="navigationItem" title="视频列表" id="YaG-N8-4T4"/>
+                    <navigationItem key="navigationItem" title="视频列表" id="YaG-N8-4T4">
+                        <barButtonItem key="rightBarButtonItem" title="size" id="wM9-qo-M9T">
+                            <connections>
+                                <segue destination="pBc-B9-cJ4" kind="show" id="Gqh-cv-vCA"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1057.2519083969464" y="-27.464788732394368"/>
+        </scene>
+        <!--Size View Controller-->
+        <scene sceneID="rGI-U6-RTg">
+            <objects>
+                <viewController id="pBc-B9-cJ4" customClass="SizeViewController" customModule="M3U8VideoCache" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="X8C-RE-lQh">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="size: " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mlF-No-xyJ">
+                                <rect key="frame" x="177" y="415.66666666666669" width="39" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="z8y-sF-Y0R"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="mlF-No-xyJ" firstAttribute="centerX" secondItem="X8C-RE-lQh" secondAttribute="centerX" id="2GX-7y-UJX"/>
+                            <constraint firstItem="mlF-No-xyJ" firstAttribute="centerY" secondItem="X8C-RE-lQh" secondAttribute="centerY" id="nND-oS-Nad"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="QCt-lr-FiP"/>
+                    <connections>
+                        <outlet property="label" destination="mlF-No-xyJ" id="ZAK-e9-VH6"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="JpA-ud-iDk" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1973" y="-27"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="23F-gu-ZGr">
