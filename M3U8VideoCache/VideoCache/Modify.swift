@@ -26,7 +26,9 @@ class IndexModify {
         }
         
         removeLastUrl.deleteLastPathComponent() // 删除主链接最后一个部件，用于内容切片的链接拼接
-        let components = text.components(separatedBy: "\n").map { e in
+        let components = text.components(separatedBy: "\n").filter({ e in
+            return !e.isEmpty
+        }).map { e in
             if e.contains(".ts") || e.contains(".m3u8") || e.contains(".key") {
                 // 给 ts、m3u8、key 这几个文件的相对路径拼接上完整的链接
                 return proxyUrl != nil ? "\(proxyUrl!)\(removeLastUrl)\(e)" : "\(removeLastUrl)\(e)"
