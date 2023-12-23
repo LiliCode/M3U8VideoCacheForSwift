@@ -171,9 +171,16 @@ class VideoCacheManager {
     }
     
     /// 清除所有缓存
-    func clearAll() {
+    /// - Parameter completionBlock: 清除完成的回调
+    func clearAll(_ completionBlock: (() -> Void)?) {
         guard let root = videoCacheRoot else { return }
-        clear(URL(fileURLWithPath: root))
+        
+        DispatchQueue.global().async {
+            self.clear(URL(fileURLWithPath: root))
+            DispatchQueue.main.async {
+                completionBlock?()
+            }
+        }
     }
     
     private func clear(_ filePath: URL) {

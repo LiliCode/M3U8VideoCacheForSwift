@@ -25,10 +25,8 @@ class SizeViewController: UIViewController {
     
     @IBAction func clearAll(_ sender: UIButton) {
         // 清除缓存大小
-        VideoCacheManager.shared.clearAll()
-        // 重新获取缓存大小
-        VideoCacheManager.shared.getCacheSize { size, sizeString in
-            self.label.text = sizeString
+        VideoCacheManager.shared.clearAll {
+            self.label.text = "0B"
         }
     }
 }

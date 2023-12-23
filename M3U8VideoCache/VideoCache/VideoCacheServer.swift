@@ -81,7 +81,7 @@ class VideoCacheServer {
             }
             
             // 开启服务器
-            webServer!.start(withPort: port ?? 8099, bonjourName: "GCDWebServer")
+            webServer!.start(withPort: port ?? 8099, bonjourName: "VideoCacheServer")
             serverUrl = webServer!.serverURL?.absoluteString
         }
     }
@@ -100,6 +100,7 @@ class VideoCacheServer {
                             completionBlock?(serverResponse)
                         }
                     } else {
+                        // ts、key 文件
                         let serverResponse = GCDWebServerDataResponse(data: d, contentType: type)
                         serverResponse.statusCode = 200
                         completionBlock?(serverResponse)
@@ -144,9 +145,10 @@ class VideoCacheServer {
                     // 获取文件响应的一些信息
                     let contentRange = res.allHeaderFields["Content-Range"] as? String
                     let contentLength = res.allHeaderFields["Content-Length"] as? String
-                    // 不是数据预取就保存数据
-                    if (!((Int(contentLength ?? "0") ?? 0) <= 2 && (contentRange?.contains("bytes 0-1") ?? false))) {
-                        // 保存
+                    // 播放器预取数据会在 headers 里面设置 Range 参数 bytes=0-1
+                    // 这样取出来的数据不是完整的数据，用来判断数据是什么类型，预取的这部分就不做缓存
+                    if (!((Int(contentLength ?? "0") ?? 0) <= 2 || (contentRange?.contains("bytes 0-1") ?? false))) {
+                        // 保存完整的数据
                         VideoCacheManager.shared.writeData(d, url: res.url!)
                     }
                 }
