@@ -17,9 +17,18 @@ class SizeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        VideoCacheManager.shared.getCacheSize { size in
-            self.label.text = "\(size / 1024 / 1024) MB"
+        // 获取缓存大小
+        VideoCacheManager.shared.getCacheSize { size, sizeString in
+            self.label.text = sizeString
         }
     }
     
+    @IBAction func clearAll(_ sender: UIButton) {
+        // 清除缓存大小
+        VideoCacheManager.shared.clearAll()
+        // 重新获取缓存大小
+        VideoCacheManager.shared.getCacheSize { size, sizeString in
+            self.label.text = sizeString
+        }
+    }
 }

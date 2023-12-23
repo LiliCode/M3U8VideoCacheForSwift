@@ -40,7 +40,7 @@ class VideoCacheManager {
     /// 如果不存在这个文件夹就创建
     /// - Parameter directoryPath: 文件夹路径
     private func createDirectoryIfNotExists(_ directoryPath: String) throws {
-        var isDirectory = ObjCBool(true)
+        var isDirectory = ObjCBool(false)
         guard !FileManager.default.fileExists(atPath: directoryPath, isDirectory: &isDirectory) else {
             return
         }
@@ -124,17 +124,76 @@ class VideoCacheManager {
     }
     
     /// 获取缓存大小
-    func getCacheSize(_ callback: ((UInt64) -> Void)?) {
+    /// - Parameter callback: 获取完成的回调，UInt64 表示字节长度，String 是格式化之后的大小字符串
+    func getCacheSize(_ callback: ((UInt64, String) -> Void)?) {
         guard let root = videoCacheRoot else {
-            callback?(0)
+            callback?(0, "0")
             return
         }
         
         DispatchQueue.global().async {
-            let size = URL(fileURLWithPath: root).cacheSize()
+            let size = self.cacheSize(URL(fileURLWithPath: root))
             DispatchQueue.main.async {
-                callback?(size)
+                callback?(size, size.toString())
             }
+        }
+    }
+    
+    /// 获取缓存占用的大小（单位：字节）
+    /// - Returns: 返回缓存占用的大小
+    private func cacheSize(_ filePath: URL) -> UInt64 {
+        guard filePath.isFileURL else { return 0 }
+        
+        let path = filePath.absoluteString.replacingOccurrences(of: "file://", with: "")
+        var size: UInt64 = 0
+        var isDirectory = ObjCBool(false)
+        let exists = FileManager.default.fileExists(atPath: path, isDirectory: &isDirectory)
+        
+        if exists && isDirectory.boolValue {
+            // 遍历文件夹下面的内容
+            guard let files = try? FileManager.default.contentsOfDirectory(atPath: path) else {
+                return 0
+            }
+            
+            for e in files {
+                let fullPath = filePath.appendingPathComponent(e)
+                size += cacheSize(fullPath)
+            }
+        } else if exists && !isDirectory.boolValue {
+            // 文件
+            let attributes = try? FileManager.default.attributesOfItem(atPath: path)
+            if let s = attributes?[FileAttributeKey.size] as? UInt64 {
+                size += s
+            }
+        }
+        
+        return size
+    }
+    
+    /// 清除所有缓存
+    func clearAll() {
+        guard let root = videoCacheRoot else { return }
+        clear(URL(fileURLWithPath: root))
+    }
+    
+    private func clear(_ filePath: URL) {
+        guard filePath.isFileURL else {
+            return
+        }
+        
+        let path = filePath.absoluteString.replacingOccurrences(of: "file://", with: "")
+        var isDirectory = ObjCBool(false)
+        let exists = FileManager.default.fileExists(atPath: path, isDirectory: &isDirectory)
+        guard exists else {
+            return
+        }
+        
+        guard let files = try? FileManager.default.contentsOfDirectory(atPath: path) else {
+            return
+        }
+        
+        for e in files {
+            try? FileManager.default.removeItem(at: filePath.appendingPathComponent(e))
         }
     }
 }

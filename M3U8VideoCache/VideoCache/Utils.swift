@@ -31,46 +31,51 @@ extension String {
         }
         
         #else
-        let d = data.withUnsafeBytes { bytes in
-            return CC_MD5(bytes, CC_LONG(data.count), &digest)
-        }
+        _ = data.withUnsafeBytes { bytes in
+            return CC_MD5(bytes, CC_LONG(data.count), &digest)
+        }
 
-        #endif
+        #endif
 
         return digest.map { String(format: "%02x", $0) }.joined()
     }
 }
 
-extension URL {
+protocol FileSizeString {
+    func toString() -> String
+}
+
+extension UInt64: FileSizeString {
     
-    /// 获取缓存占用的大小（单位：字节）
-    /// - Returns: 返回缓存占用的大小
-    func cacheSize() -> UInt64 {
-        guard isFileURL else { return 0 }
-        
-        let path = absoluteString.replacingOccurrences(of: "file://", with: "")
-        var size: UInt64 = 0
-        var isDirectory = ObjCBool(false)
-        let exists = FileManager.default.fileExists(atPath: path, isDirectory: &isDirectory)
-        
-        if exists && isDirectory.boolValue {
-            guard let enumerator = FileManager.default.enumerator(atPath: path) else {
-                return 0
-            }
-            
-            for e in enumerator.allObjects {
-                let fullPath = appendingPathComponent(e as! String)
-                size += fullPath.cacheSize()
-            }
-        } else if exists {
-            // 文件
-            let attributes = try? FileManager.default.attributesOfItem(atPath: path)
-            if let s = attributes?[FileAttributeKey.size] as? UInt64 {
-                size += s
-            }
+    /// 转换成文件大小，带单位的字符串
+    /// - Returns: 带单位的字符串
+    func toString() -> String {
+        let suffixs = ["B", "KB", "MB", "GB", "TB"]
+        var size = Double(self)
+        var idx = 0
+        while size > 1000.0 {
+            size /= 1000.0
+            idx += 1
         }
         
-        return size
+        return "\(size.decimalString(2))\(suffixs[idx])"
     }
     
+}
+
+extension Double {
+    
+    /// 准确的小数尾截取 - 没有进位
+    func decimalString(_ base: Self = 1) -> String {
+        let tempCount: Self = pow(10, base)
+        let temp = self*tempCount
+        
+        let target = Self(Int(temp))
+        let stepone = target / tempCount
+        if stepone.truncatingRemainder(dividingBy: 1) == 0 {
+            return String(format: "%.0f", stepone)
+        } else {
+            return "\(stepone)"
+        }
+    }
 }

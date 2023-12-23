@@ -33,7 +33,22 @@
     }
     ```
 
-2. 如上面的代码中，将生成的代理链接放入 `AVPlyaer` 中进行播放
+3. 如上面的代码中，将生成的代理链接放入 `AVPlyaer` 中进行播放
+
+4. 获取缓存大小
+
+    ```swift
+    VideoCacheManager.shared.getCacheSize { size, sizeString in
+        // size UInt64 类型，文件大小
+        // sizeString 格式化之后的文件大小字符串
+    }
+    ```
+
+5. 清除所有的缓存
+
+    ```swift
+    VideoCacheManager.shared.clearAll()
+    ```
 
 ## 原理
 

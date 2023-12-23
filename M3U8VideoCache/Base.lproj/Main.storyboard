@@ -45,11 +45,21 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zzl-cn-xuh">
+                                <rect key="frame" x="149.66666666666666" y="466.66666666666669" width="94" height="35"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="清除缓存"/>
+                                <connections>
+                                    <action selector="clearAll:" destination="pBc-B9-cJ4" eventType="touchUpInside" id="Ly5-eF-mVV"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="z8y-sF-Y0R"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="mlF-No-xyJ" firstAttribute="centerX" secondItem="X8C-RE-lQh" secondAttribute="centerX" id="2GX-7y-UJX"/>
+                            <constraint firstItem="zzl-cn-xuh" firstAttribute="top" secondItem="mlF-No-xyJ" secondAttribute="bottom" constant="30" id="4VZ-6I-nj2"/>
+                            <constraint firstItem="zzl-cn-xuh" firstAttribute="centerX" secondItem="mlF-No-xyJ" secondAttribute="centerX" id="JZN-ii-Wnj"/>
                             <constraint firstItem="mlF-No-xyJ" firstAttribute="centerY" secondItem="X8C-RE-lQh" secondAttribute="centerY" id="nND-oS-Nad"/>
                         </constraints>
                     </view>
@@ -60,7 +70,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JpA-ud-iDk" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1973" y="-27"/>
+            <point key="canvasLocation" x="1906" y="-27"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="23F-gu-ZGr">
