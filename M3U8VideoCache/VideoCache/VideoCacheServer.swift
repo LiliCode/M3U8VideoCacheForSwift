@@ -12,9 +12,12 @@ import GCDWebServer
 class VideoCacheServer {
     static let shared = VideoCacheServer()
     private var port: UInt?
-    private var serverUrl: String?
     private let path: String = "request"
     private var webServer: GCDWebServer?
+    private var serverUrl: String? {
+        /// 需要获取 bonjourServerURL 地址，不能获取 serverURL
+        return webServer!.bonjourServerURL?.absoluteString
+    }
     
     private init() {}
     
@@ -82,7 +85,6 @@ class VideoCacheServer {
             
             // 开启服务器
             webServer!.start(withPort: port ?? 8099, bonjourName: "VideoCacheServer")
-            serverUrl = webServer!.serverURL?.absoluteString
         }
     }
     
@@ -147,7 +149,9 @@ class VideoCacheServer {
                     let contentLength = res.allHeaderFields["Content-Length"] as? String
                     // 播放器预取数据会在 headers 里面设置 Range 参数 bytes=0-1
                     // 这样取出来的数据不是完整的数据，用来判断数据是什么类型，预取的这部分就不做缓存
-                    if (!((Int(contentLength ?? "0") ?? 0) <= 2 || (contentRange?.contains("bytes 0-1") ?? false))) {
+                    if (!((contentLength != nil && Int(contentLength!)! <= 2) ||
+                          (contentRange != nil && contentRange!.contains("bytes 0-1")) ||
+                          d.count <= 2)) {
                         // 保存完整的数据
                         VideoCacheManager.shared.writeData(d, url: res.url!)
                     }

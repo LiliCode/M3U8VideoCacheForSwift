@@ -13,19 +13,29 @@ class VideoDownloader {
     static let shared = VideoDownloader()
     var task: URLSessionDataTask?
     var session: URLSession?
+    private var tasks: [String: URLSessionTask] = [:]
     
     private init() {
         session = URLSession(configuration: URLSessionConfiguration.default, delegate: nil, delegateQueue: OperationQueue())
     }
     
     func download(_ request: URLRequest, completionBlock: ((Data?, URLResponse?, Error?) -> Void)?) {
-        if task?.currentRequest != nil {
-            // 结束未完成的请求
-            task?.cancel();
+        guard let requestUri = request.url?.absoluteString else {
+            return
         }
         
-        task = session?.dataTask(with: request, completionHandler: completionBlock!)
+        if let t = tasks[requestUri] {
+            // 结束未完成的请求
+            t.cancel();
+        }
+        
+        task = session?.dataTask(with: request, completionHandler: { [weak self] (data, res, e) in
+            self?.tasks[res?.url?.absoluteString ?? ""] = nil
+            print("还剩下 \(self?.tasks.count ?? 0) 个下载任务")
+            completionBlock?(data, res, e)
+        })
         task?.resume();
+        tasks[requestUri] = task
     }
     
 }

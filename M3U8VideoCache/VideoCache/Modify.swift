@@ -9,6 +9,8 @@ import Foundation
 
 /// 索引文件修改
 class IndexModify {
+    /// key 的标志
+    private static let KeyIdentifier = "#EXT-X-KEY:"
     
     /// 修改
     static func modify(_ data: Data, url: URL) -> Data? {
@@ -30,8 +32,30 @@ class IndexModify {
             return !e.isEmpty
         }).map { e in
             if e.contains(".ts") || e.contains(".m3u8") || e.contains(".key") {
-                // 给 ts、m3u8、key 这几个文件的相对路径拼接上完整的链接
-                return proxyUrl != nil ? "\(proxyUrl!)\(removeLastUrl)\(e)" : "\(removeLastUrl)\(e)"
+                if e.starts(with: KeyIdentifier) && e.contains(".key") {
+                    // 单独处理 key
+                    guard let keyInfoString = e.components(separatedBy: KeyIdentifier).last else {
+                        return e
+                    }
+                    
+                    let queryList = keyInfoString.components(separatedBy: ",")
+                    var query: [String: String] = [:]
+                    for e in queryList {
+                        let queryKeyValue = e.components(separatedBy: "=")
+                        query[queryKeyValue.first ?? ""] = queryKeyValue.last
+                    }
+                    
+                    // 提取 URL
+                    let uri = query["URI"]?.replacingOccurrences(of: "\"", with: "")
+                    // 生成代理链接
+                    let keyProxyUri = createProxyUrl(proxyUrl, removeLastUrl: removeLastUrl.absoluteString, relativePath: uri ?? "")
+                    query["URI"] = "\"\(keyProxyUri)\""
+                    let keyUriRow = query.keys.map { "\($0)=\(query[$0] ?? "")"}.joined(separator: ",")
+                    
+                    return KeyIdentifier + keyUriRow
+                }
+                
+                return createProxyUrl(proxyUrl, removeLastUrl: removeLastUrl.absoluteString, relativePath: e)
             }
             
             return e
@@ -39,5 +63,14 @@ class IndexModify {
         
         let newText = components.joined(separator: "\n")
         return newText.data(using: .utf8)
+    }
+    
+    private static func createProxyUrl(_ proxyUrl: String?, removeLastUrl: String, relativePath: String) -> String {
+        if relativePath.starts(with: "https://") || relativePath.starts(with: "http://") {
+            return proxyUrl != nil ? "\(proxyUrl!)\(relativePath)" : relativePath
+        }
+        
+        // 给 ts、m3u8、key 这几个文件的相对路径拼接上完整的链接
+        return proxyUrl != nil ? "\(proxyUrl!)\(removeLastUrl)\(relativePath)" : "\(removeLastUrl)\(relativePath)"
     }
 }
