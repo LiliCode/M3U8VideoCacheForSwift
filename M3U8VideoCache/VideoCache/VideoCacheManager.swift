@@ -67,6 +67,19 @@ class VideoCacheManager {
         return "\(root)\(fileName)"
     }
     
+    /// mp4 链接转 ts 链接
+    private func mp4ToTsUri(_ mp4Uri: URL) -> URL {
+        var videoUri = mp4Uri
+        if (videoUri.absoluteString.contains(".mp4")) {
+            // 处理 mp4
+            let fileName = videoUri.lastPathComponent.replacingOccurrences(of: ".mp4", with: ".ts")
+            videoUri.deleteLastPathComponent()
+            videoUri = videoUri.appendingPathComponent(fileName)
+        }
+        
+        return videoUri
+    }
+    
     /// 存入文件
     /// - Parameters:
     ///   - data: 文件二进制数据
@@ -97,8 +110,11 @@ class VideoCacheManager {
         DispatchQueue.global().async {
             if FileManager.default.fileExists(atPath: filePath) {
                 var contentType = "audio/mpegurl"
-                if (url.absoluteString.contains(".ts") || url.absoluteString.contains(".key")) {
+                if url.absoluteString.contains(".ts") || 
+                    url.absoluteString.contains(".key") {
                     contentType = "application/octet-stream"
+                } else if url.absoluteString.contains(".mp4") {
+                    contentType = "video/mp4"
                 }
                 
                 completionBlock?(FileManager.default.contents(atPath: filePath), contentType)

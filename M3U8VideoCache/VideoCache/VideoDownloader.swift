@@ -30,7 +30,7 @@ class VideoDownloader {
         }
         
         task = session?.dataTask(with: request, completionHandler: { [weak self] (data, res, e) in
-            self?.tasks[res?.url?.absoluteString ?? ""] = nil
+            self?.tasks.removeValue(forKey: res?.url?.absoluteString ?? "")
             print("还剩下 \(self?.tasks.count ?? 0) 个下载任务")
             completionBlock?(data, res, e)
         })

@@ -9,8 +9,16 @@ import Foundation
 
 /// 索引文件修改
 class IndexModify {
-    /// key 的标志
+    /// uri 标识
+    private static let UriIdentifier = "URI="
+    /// key
     private static let KeyIdentifier = "#EXT-X-KEY:"
+    /// frame stream
+    private static let XIFrameStreamInfoIdentifier = "#EXT-X-I-FRAME-STREAM-INF:"
+    /// x media
+    private static let XMediaInfoIdentifier = "#EXT-X-MEDIA:"
+    /// x map
+    private static let XMapIdentifier = "#EXT-X-MAP:"
     
     /// 修改
     static func modify(_ data: Data, url: URL) -> Data? {
@@ -31,31 +39,21 @@ class IndexModify {
         let components = text.components(separatedBy: "\n").filter({ e in
             return !e.isEmpty
         }).map { e in
-            if e.contains(".ts") || e.contains(".m3u8") || e.contains(".key") {
-                if e.starts(with: KeyIdentifier) && e.contains(".key") {
-                    // 单独处理 key
-                    guard let keyInfoString = e.components(separatedBy: KeyIdentifier).last else {
-                        return e
-                    }
-                    
-                    let queryList = keyInfoString.components(separatedBy: ",")
-                    var query: [String: String] = [:]
-                    for e in queryList {
-                        let queryKeyValue = e.components(separatedBy: "=")
-                        query[queryKeyValue.first ?? ""] = queryKeyValue.last
-                    }
-                    
-                    // 提取 URL
-                    let uri = query["URI"]?.replacingOccurrences(of: "\"", with: "")
-                    // 生成代理链接
-                    let keyProxyUri = createProxyUrl(proxyUrl, removeLastUrl: removeLastUrl.absoluteString, relativePath: uri ?? "")
-                    query["URI"] = "\"\(keyProxyUri)\""
-                    let keyUriRow = query.keys.map { "\($0)=\(query[$0] ?? "")"}.joined(separator: ",")
-                    
-                    return KeyIdentifier + keyUriRow
-                }
-                
+            if !e.starts(with: "#") {
+                // 资源 .ts .m3u8 .mp4 的相对路径
                 return createProxyUrl(proxyUrl, removeLastUrl: removeLastUrl.absoluteString, relativePath: e)
+            } else if e.starts(with: KeyIdentifier) && e.contains(UriIdentifier) {
+                // 单独处理 key
+                return processingURI(e, idendifier: KeyIdentifier, proxyUrl: proxyUrl, removeLastUrl: removeLastUrl.absoluteString)
+            } else if e.starts(with: XIFrameStreamInfoIdentifier) && e.contains(UriIdentifier) {
+                // 单独处理特殊情况的 m3u8 链接
+                return processingURI(e, idendifier: XIFrameStreamInfoIdentifier, proxyUrl: proxyUrl, removeLastUrl: removeLastUrl.absoluteString)
+            } else if e.starts(with: XMediaInfoIdentifier) && e.contains(UriIdentifier) {
+                // 单独处理特殊情况的 m3u8 链接
+                return processingURI(e, idendifier: XMediaInfoIdentifier, proxyUrl: proxyUrl, removeLastUrl: removeLastUrl.absoluteString)
+            } else if e.starts(with: XMapIdentifier) && e.contains(UriIdentifier) {
+                // 单独处理特殊情况的片段链接
+                return processingURI(e, idendifier: XMapIdentifier, proxyUrl: proxyUrl, removeLastUrl: removeLastUrl.absoluteString)
             }
             
             return e
@@ -63,6 +61,29 @@ class IndexModify {
         
         let newText = components.joined(separator: "\n")
         return newText.data(using: .utf8)
+    }
+    
+    /// 处理包含 URI 的行
+    private static func processingURI(_ uriRowText: String, idendifier: String, proxyUrl: String?, removeLastUrl: String) -> String {
+        guard let uriInfoString = uriRowText.components(separatedBy: idendifier).last else {
+            return uriRowText
+        }
+        
+        let queryList = uriInfoString.components(separatedBy: ",")
+        var query: [String: String] = [:]
+        for e in queryList {
+            let queryKeyValue = e.components(separatedBy: "=")
+            query[queryKeyValue.first ?? ""] = queryKeyValue.last
+        }
+        
+        // 提取 URI
+        let uri = query["URI"]?.replacingOccurrences(of: "\"", with: "")
+        // 生成代理链接
+        let keyProxyUri = createProxyUrl(proxyUrl, removeLastUrl: removeLastUrl, relativePath: uri ?? "")
+        query["URI"] = "\"\(keyProxyUri)\""
+        let keyUriRow = query.keys.map { "\($0)=\(query[$0] ?? "")"}.joined(separator: ",")
+        
+        return idendifier + keyUriRow
     }
     
     private static func createProxyUrl(_ proxyUrl: String?, removeLastUrl: String, relativePath: String) -> String {
