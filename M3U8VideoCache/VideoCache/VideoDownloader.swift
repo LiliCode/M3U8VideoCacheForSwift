@@ -38,4 +38,9 @@ class VideoDownloader {
         tasks[requestUri] = task
     }
     
+    func stopAll() {
+        tasks.forEach { url, task in
+            task.cancel()
+        }
+    }
 }
