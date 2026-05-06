@@ -36,9 +36,8 @@ class IndexModify {
         }
         
         removeLastUrl.deleteLastPathComponent() // 删除主链接最后一个部件，用于内容切片的链接拼接
-        let components = text.components(separatedBy: "\n").filter({ e in
-            return !e.isEmpty
-        }).map { e in
+        let components = text.components(separatedBy: "\n").map { e in
+            if e.isEmpty { return e }
             if !e.starts(with: "#") {
                 // 资源 .ts .m3u8 .mp4 的相对路径
                 return createProxyUrl(proxyUrl, removeLastUrl: removeLastUrl.absoluteString, relativePath: e)
@@ -63,27 +62,18 @@ class IndexModify {
         return newText.data(using: .utf8)
     }
     
-    /// 处理包含 URI 的行
+    /// 处理包含 URI 的行（用正则提取 URI="..."，避免逗号拆分误伤）
     private static func processingURI(_ uriRowText: String, idendifier: String, proxyUrl: String?, removeLastUrl: String) -> String {
-        guard let uriInfoString = uriRowText.components(separatedBy: idendifier).last else {
+        let pattern = "URI=\"([^\"]*)\""
+        guard let regex = try? NSRegularExpression(pattern: pattern),
+              let match = regex.firstMatch(in: uriRowText, range: NSRange(location: 0, length: (uriRowText as NSString).length)),
+              let uriRange = Range(match.range(at: 1), in: uriRowText) else {
             return uriRowText
         }
         
-        let queryList = uriInfoString.components(separatedBy: ",")
-        var query: [String: String] = [:]
-        for e in queryList {
-            let queryKeyValue = e.components(separatedBy: "=")
-            query[queryKeyValue.first ?? ""] = queryKeyValue.last
-        }
-        
-        // 提取 URI
-        let uri = query["URI"]?.replacingOccurrences(of: "\"", with: "")
-        // 生成代理链接
-        let keyProxyUri = createProxyUrl(proxyUrl, removeLastUrl: removeLastUrl, relativePath: uri ?? "")
-        query["URI"] = "\"\(keyProxyUri)\""
-        let keyUriRow = query.keys.map { "\($0)=\(query[$0] ?? "")"}.joined(separator: ",")
-        
-        return idendifier + keyUriRow
+        let uri = String(uriRowText[uriRange])
+        let proxyUri = createProxyUrl(proxyUrl, removeLastUrl: removeLastUrl, relativePath: uri)
+        return uriRowText.replacingCharacters(in: uriRange, with: proxyUri)
     }
     
     private static func createProxyUrl(_ proxyUrl: String?, removeLastUrl: String, relativePath: String) -> String {

@@ -25,7 +25,7 @@ class VideoCacheManager {
     func setCacheDirectory(_ path: String?, simulatorDirectory: String?) {
         #if targetEnvironment(simulator)
         // 模拟器（用于调试）
-        videoCacheRoot = simulatorDirectory ?? "/Users/andy/Downloads/videoCache/"
+        videoCacheRoot = simulatorDirectory ?? "/Users/lili/Downloads/videoCache/"
         try? createDirectoryIfNotExists(videoCacheRoot!)
         #else
         // 真机

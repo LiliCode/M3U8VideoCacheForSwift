@@ -15,8 +15,7 @@ class VideoCacheServer {
     private let path: String = "request"
     private var webServer: GCDWebServer?
     private var serverUrl: String? {
-        /// 需要获取 bonjourServerURL 地址，不能获取 serverURL
-        return webServer!.bonjourServerURL?.absoluteString
+        return webServer?.serverURL?.absoluteString
     }
     
     private init() {}
@@ -61,7 +60,9 @@ class VideoCacheServer {
         if (webServer == nil) {
             webServer = GCDWebServer()
             webServer!.addDefaultHandler(forMethod: "GET", request: GCDWebServerRequest.self) { [weak self] (request, completionBlock) in
-                guard let originalUrl = request.url.absoluteString.components(separatedBy: "?url=").last else {
+                guard let components = URLComponents(url: request.url, resolvingAgainstBaseURL: false),
+                      let originalUrlParam = components.queryItems?.first(where: { $0.name == "url" })?.value,
+                      let originalUrl = originalUrlParam.removingPercentEncoding else {
                     completionBlock(GCDWebServerResponse())
                     return
                 }
@@ -126,10 +127,10 @@ class VideoCacheServer {
                 return;
             }
             
-            // 存在响应
-            if error != nil {
-                serverResponse.contentType = res.mimeType ?? ""
-                serverResponse.statusCode = res.statusCode
+            if let e = error {
+                // 请求失败，返回错误状态
+                print("❌ 请求失败: \(e.localizedDescription)")
+                serverResponse.statusCode = res.statusCode >= 400 ? res.statusCode : 502
             } else {
                 if let d = data {
                     if res.url!.absoluteString.isM3u8Url() {
